@@ -1,1 +1,692 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100d1d">
+  <title>Beastie — Content Locker</title>
+
+  <style>
+    :root {
+      --bg: #100d1d;
+      --panel: #19152a;
+      --panel2: #211b36;
+      --border: #342b4c;
+      --text: #f5f1ff;
+      --muted: #aaa1bf;
+      --purple: #9b72ff;
+      --purple2: #7447ed;
+      --green: #66e0a3;
+      --red: #ff7d92;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at top right, #281747 0, transparent 35%),
+        var(--bg);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    button, input, select, textarea { font: inherit; }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      border-radius: 10px;
+      padding: 11px 15px;
+      color: white;
+      background: var(--purple2);
+      font-weight: 650;
+    }
+
+    button:hover { filter: brightness(1.12); }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+
+    button.secondary {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+    }
+
+    button.danger {
+      color: #ffc1ca;
+      background: #3a1d2b;
+      border: 1px solid #613044;
+    }
+
+    button.small { padding: 7px 10px; font-size: 13px; }
+
+    input, select, textarea {
+      width: 100%;
+      color: var(--text);
+      background: #100d1d;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--purple);
+    }
+
+    input[type="file"] { padding: 10px; }
+    input[type="checkbox"] { width: auto; }
+    label { display: block; font-size: 13px; color: #ddd5ee; }
+    label > input, label > select, label > textarea {
+      display: block;
+      margin-top: 7px;
+    }
+
+    a { color: #c4aaff; overflow-wrap: anywhere; }
+
+    .shell { max-width: 1120px; margin: auto; padding: 22px; }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      display: grid;
+      place-items: center;
+      width: 47px;
+      height: 47px;
+      border-radius: 15px;
+      background: linear-gradient(135deg, #ac85ff, #6033cf);
+      font-size: 25px;
+      font-weight: 900;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: 25px; margin-bottom: 2px; }
+    h2 { font-size: 19px; }
+    h3 { font-size: 16px; }
+    .muted { color: var(--muted); font-size: 13px; }
+    .eyebrow {
+      color: #c3a8ff;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      font-weight: 800;
+    }
+
+    .notice {
+      border: 1px solid #5c477d;
+      background: #241a38;
+      padding: 15px;
+      border-radius: 13px;
+      margin-bottom: 20px;
+      font-size: 13px;
+    }
+
+    .notice strong { color: #e0ccff; }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin: 18px 0;
+    }
+
+    .tabs button { white-space: nowrap; }
+    .tabs button.active { background: var(--purple2); }
+    .tabs button:not(.active) {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .panel {
+      background: rgba(25, 21, 42, .95);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 18px;
+      min-width: 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field { margin-bottom: 15px; min-width: 0; }
+    .full { grid-column: 1 / -1; }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      padding: 16px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .stat strong { display: block; font-size: 25px; }
+    .stat span { color: var(--muted); font-size: 12px; }
+
+    .cards { display: grid; gap: 12px; }
+
+    .item-card {
+      padding: 15px;
+      border: 1px solid var(--border);
+      background: #171326;
+      border-radius: 13px;
+      min-width: 0;
+    }
+
+    .item-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .item-top h3 { margin-bottom: 4px; overflow-wrap: anywhere; }
+
+    .tag {
+      display: inline-block;
+      border-radius: 20px;
+      padding: 4px 9px;
+      background: #302448;
+      color: #d7c4ff;
+      font-size: 11px;
+      margin: 3px 4px 3px 0;
+    }
+
+    .tag.warning { background: #382b1b; color: #ffd68d; }
+    .tag.success { background: #18392b; color: #8df0bd; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .linkbox {
+      background: #100d1d;
+      border: 1px dashed #67518b;
+      padding: 11px;
+      border-radius: 10px;
+      overflow-wrap: anywhere;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed var(--border);
+      padding: 25px 15px;
+      border-radius: 12px;
+    }
+
+    .hidden { display: none !important; }
+
+    .visitor {
+      max-width: 620px;
+      margin: 35px auto;
+    }
+
+    .visitor .hero {
+      text-align: center;
+      padding: 15px 5px 25px;
+    }
+
+    .file-icon { font-size: 42px; margin-bottom: 8px; }
+
+    .download-button {
+      display: block;
+      width: 100%;
+      text-align: center;
+      text-decoration: none;
+      color: white;
+      background: var(--purple2);
+      border-radius: 11px;
+      padding: 14px;
+      font-weight: 750;
+      margin: 16px 0;
+    }
+
+    .download-button.disabled {
+      opacity: .5;
+      pointer-events: none;
+    }
+
+    .divider { height: 1px; background: var(--border); margin: 17px 0; }
+
+    footer {
+      padding: 20px 0;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 650px) {
+      .shell { padding: 14px; }
+      .panel { padding: 15px; }
+      .grid { grid-template-columns: 1fr; }
+      .stats { gap: 8px; }
+      .stat { padding: 12px; }
+      .stat strong { font-size: 21px; }
+      header { align-items: flex-start; }
+      header .muted { max-width: 200px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand">
+        <div class="logo">B</div>
+        <div>
+          <h1>Beastie</h1>
+          <div class="muted">Content locker dashboard</div>
+        </div>
+      </div>
+      <button id="homeButton" class="secondary small" type="button">
+        Admin dashboard
+      </button>
+    </header>
+
+    <div class="notice">
+      <strong>Prototype mode — not a secure live locker.</strong>
+      Data is saved only in this browser. Selected files are not uploaded to
+      a server. A generated link will work only in this browser profile where
+      its metadata exists. App downloads, installations, app openings and
+      registrations are not verified. Do not use this prototype to collect
+      sensitive files or make promises to visitors that verification occurred.
+    </div>
+
+    <main id="adminView">
+      <div class="stats">
+        <div class="stat"><strong id="appCount">0</strong><span>Managed apps</span></div>
+        <div class="stat"><strong id="contentCount">0</strong><span>Locker items</span></div>
+        <div class="stat"><strong>₦0</strong><span>Visitor payment required</span></div>
+      </div>
+
+      <nav class="tabs" aria-label="Dashboard sections">
+        <button class="active" data-tab="content" type="button">Content locker</button>
+        <button data-tab="apps" type="button">Manage apps</button>
+        <button data-tab="links" type="button">Generated links</button>
+      </nav>
+
+      <!-- CONTENT TAB -->
+      <section id="tab-content">
+        <div class="panel">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Create a locker item</div>
+              <h2 style="margin:5px 0">Upload content</h2>
+              <div class="muted">
+                Choose a file, select the app and set its unlock requirement.
+              </div>
+            </div>
+          </div>
+
+          <form id="contentForm">
+            <div class="grid">
+              <div class="field full">
+                <label for="fileInput">
+                  Photo, video, PDF or other file
+                  <input id="fileInput" type="file" required
+                    accept="image/*,video/*,.pdf,.txt,.zip,.doc,.docx,.mp3,.mp4">
+                </label>
+                <div id="fileInfo" class="muted" style="margin-top:7px">
+                  Select a file from your phone.
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="contentTitle">Content title
+                  <input id="contentTitle" maxlength="120"
+                    placeholder="e.g. Match highlights" required>
+                </label>
+              </div>
+
+              <div class="field">
+                <label for="appSelect">App for this content
+                  <select id="appSelect" required>
+                    <option value="">Add an app first</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="field full">
+                <label for="unlockRequirement">Unlock requirement
+                  <select id="unlockRequirement" required>
+                    <option value="open">Open the app</option>
+                    <option value="register">Register in the app</option>
+                  </select>
+                </label>
+                <p class="muted" style="margin:7px 0 0">
+                  This records your intended rule only. The prototype cannot
+                  detect whether the visitor completed it.
+                </p>
+              </div>
+
+              <div class="field full">
+                <label for="contentDescription">Optional description
+                  <textarea id="contentDescription" rows="3" maxlength="500"
+                    placeholder="Tell visitors what this content is about."></textarea>
+                </label>
+              </div>
+
+              <div class="field full">
+                <label style="display:flex;gap:10px;align-items:flex-start">
+                  <input id="permissionConfirm" type="checkbox" required>
+                  <span>
+                    I have permission to share this file and use the selected
+                    app's download link.
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <button type="submit" id="createContentButton">
+              Create content link
+            </button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="section-head">
+            <div>
+              <h2 style="margin-bottom:4px">Your content</h2>
+              <div class="muted">Each item has its own unique demo link.</div>
+            </div>
+          </div>
+          <div id="contentList" class="cards"></div>
+        </div>
+      </section>
+
+      <!-- APP MANAGER TAB -->
+      <section id="tab-apps" class="hidden">
+        <div class="panel">
+          <div class="eyebrow">App library</div>
+          <h2 style="margin:5px 0 16px">Add an app you manage</h2>
+
+          <form id="appForm">
+            <input id="editingAppId" type="hidden">
+
+            <div class="grid">
+              <div class="field">
+                <label for="appName">App name
+                  <input id="appName" maxlength="100"
+                    placeholder="e.g. Sport Zone App" required>
+                </label>
+              </div>
+
+              <div class="field">
+                <label for="appVersion">Version or identifier (optional)
+                  <input id="appVersion" maxlength="100"
+                    placeholder="e.g. Android app">
+                </label>
+              </div>
+
+              <div class="field full">
+                <label for="appDownloadUrl">Official download URL
+                  <input id="appDownloadUrl" type="url" maxlength="1000"
+                    placeholder="https://example.com/app.apk" required>
+                </label>
+                <p class="muted" style="margin:7px 0 0">
+                  Use an HTTPS URL you control or are authorized to share.
+                  This prototype does not host APK files.
+                </p>
+              </div>
+
+              <div class="field full">
+                <label for="appPackage">Android package name (optional)
+                  <input id="appPackage" maxlength="200"
+                    placeholder="e.g. com.example.myapp">
+                </label>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button id="saveAppButton" type="submit">Add app</button>
+              <button id="cancelEditButton" class="secondary hidden"
+                type="button">Cancel edit</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel">
+          <h2>Your managed apps</h2>
+          <div id="appList" class="cards"></div>
+        </div>
+      </section>
+
+      <!-- LINK MANAGER TAB -->
+      <section id="tab-links" class="hidden">
+        <div class="panel">
+          <h2>Generated content links</h2>
+          <p class="muted">
+            Copy a link to test the visitor screen in this same browser.
+            It is not a public, multi-user link until Beastie has a backend.
+          </p>
+          <div id="linkList" class="cards"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- VISITOR VIEW -->
+    <main id="visitorView" class="visitor hidden">
+      <div id="visitorContent"></div>
+    </main>
+
+    <footer>
+      Beastie prototype · No visitor payments · No real unlock verification
+    </footer>
+  </div>
+
+  <script>
+    "use strict";
+
+    /*
+      BEASTIE PROTOTYPE DATA
+
+      This version stores app and content METADATA in localStorage.
+      It does not upload files. The actual File object exists only in the
+      current browser session and is not available to someone on another phone.
+
+      A production version needs:
+      - Authenticated admin accounts and server-side authorization.
+      - A backend API (for example, deployed on Render).
+      - A database for apps, content, link IDs and verification records.
+      - Private cloud object storage and short-lived signed file URLs.
+      - Each target app to cooperate with the backend to verify registration
+        or another trustworthy event.
+      - Server-side checks before content is released.
+    */
+
+    const STORAGE_KEY = "beastie-prototype-v1";
+
+    const defaultState = { apps: [], content: [] };
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return structuredClone(defaultState);
+
+        const parsed = JSON.parse(saved);
+        return {
+          apps: Array.isArray(parsed.apps) ? parsed.apps : [],
+          content: Array.isArray(parsed.content) ? parsed.content : []
+        };
+      } catch (error) {
+        console.warn("Could not read saved Beastie data.", error);
+        return { apps: [], content: [] };
+      }
+    }
+
+    let state = loadState();
+    let selectedFile = null;
+
+    const $ = (id) => document.getElementById(id);
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        return true;
+      } catch (error) {
+        alert("The browser could not save your data. Storage may be full.");
+        return false;
+      }
+    }
+
+    function makeId() {
+      if (crypto && typeof crypto.randomUUID === "function") {
+        return crypto.randomUUID();
+      }
+
+      return "b-" + Date.now().toString(36) +
+        "-" + Math.random().toString(36).slice(2, 12);
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[character]);
+    }
+
+    function safeExternalUrl(value) {
+      try {
+        const parsed = new URL(value);
+        if (parsed.protocol === "https:") return parsed.href;
+      } catch (_) {}
+      return "";
+    }
+
+    function formatSize(bytes) {
+      if (!Number.isFinite(bytes)) return "Unknown size";
+      if (bytes < 1024) return bytes + " B";
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+      if (bytes < 1024 * 1024 * 1024) {
+        return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+      }
+      return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+    }
+
+    function requirementLabel(value) {
+      return value === "register"
+        ? "Register in the app"
+        : "Open the app";
+    }
+
+    function getApp(appId) {
+      return state.apps.find((app) => app.id === appId);
+    }
+
+    function getContent(contentId) {
+      return state.content.find((item) => item.id === contentId);
+    }
+
+    /*
+      A hash link is used only for demonstration.
+      Example: https://your-site.example/index.html#content=UNIQUE_ID
+
+      The link does not contain the file itself, and another browser cannot
+      retrieve this browser's localStorage.
+    */
+    function contentLink(item) {
+      return location.href.split("#")[0] +
+        "#content=" + encodeURIComponent(item.id);
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll("[data-tab]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.tab === tabName);
+      });
+
+      ["content", "apps", "links"].forEach((name) => {
+        $("tab-" + name).classList.toggle("hidden", name !== tabName);
+      });
+    }
+
+    document.querySelectorAll("[data-tab]").forEach((button) => {
+      button.addEventListener("click", () => switchTab(button.dataset.tab));
+    });
+
+    function renderAppOptions() {
+      const select = $("appSelect");
+      const previousValue = select.value;
+
+      select.innerHTML = '<option value="">Choose an app</option>';
+
+      state.apps.forEach((app) => {
+        const option = document.createElement("option");
+        option.value = app.id;
+        option.textContent = app.name;
+        select.appendChild(option);
+      });
+
+      if (state.apps.some((app) => app.id === previousValue)) {
+        select.value = previousValue;
+      }
+
+      select.disabled = state.apps.length === 0;
+      $("createContentButton").disabled = state.apps.length === 0;
+    }
+
+    function renderStats() {
+      $("appCount").textContent = state.apps.length;
+      $("contentCount").textContent = state.content.length;
+    }
+
+    function renderApps() {
+      const container = $("appList");
+
+      if (!state.apps.length) {
+        container.innerHTML =
+          '<div class="empty">No apps yet. Add an app above to get started.</div>';
+        return;
+      }
+
+      container.innerHTML = state.apps.map((app) => `
+        <article class="item-card">
+          <div class="item-top">
+            <div>
+              <h3>${escapeHTML(app.name)}</h3>
+              <div class="muted">${escapeHTML(app.version || "No version set")}</div>
+            </div>
+            <span class="tag">Managed app</span>
+          </div>
+          <div class="muted" style="margin-top:10px">
+            ${app.packageName
+              ? "Package: " + escapeHTML(app.packageName)
+              : "No package name supplied"}
+          </div>
